@@ -26,7 +26,7 @@ export class AsyncApiProblem extends Error implements Problem {
                 .type
                 .startsWith(problem.errorUrlPrefix)
                 ? problem.type
-                : `${problem.URL_PREFIX}${problem.type}`;
+                : `${problem.errorUrlPrefix}${problem.type}`;
 
         this.title = problem.title;
         this.status = problem.status;
