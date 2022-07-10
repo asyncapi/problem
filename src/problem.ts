@@ -1,4 +1,4 @@
-import { CONTENT_TYPE, Problem } from "types/problem";
+import { CONTENT_TYPE, Problem } from "types";
 export class AsyncApiProblem extends Error implements Problem {
 
     public "Content-Type" = CONTENT_TYPE;
@@ -44,4 +44,18 @@ export class AsyncApiProblem extends Error implements Problem {
         }
     }
 
+    static toJSON(problem: AsyncApiProblem, includeStack = false): Problem {
+
+        const { name, message, stack, ...rest } = problem;
+        
+        const jsonObject = {
+            ...rest
+        }
+
+        if (includeStack)
+            jsonObject.stack = stack;
+
+        return jsonObject;
+
+    }
 };
