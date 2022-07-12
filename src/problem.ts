@@ -1,53 +1,53 @@
-import { CONTENT_TYPE, Problem } from "types";
-export class AsyncApiProblem extends Error implements Problem {
+import { httpObject, Problem } from "types";
 
-    public "Content-Type" = CONTENT_TYPE;
+enum COPY_MODE {
+    SKIP_PROPS = 'skipProps',
+    LEAVE_PROPS = 'leaveProps'
+}
+
+export class AsyncApiProblem extends Error implements Problem {
     public type: string;
     public title: string;
-    public errorUrlPrefix: string;
-    public status: number;
     public instance?: string;
-    public skipFields?: string[];
     public detail?: string;
-    public parsedJSON?: object | undefined;
-    public validationErrors?: object[] | undefined;
-    public location?: object[] | undefined;
-    public refs?: object[] | undefined;
+    public http: httpObject
     [key: string]: any;
 
 
-    constructor(problem: Problem) {
+    constructor(problem: Problem, keys?: string[]) {
         super(problem.detail || problem.title);
-        this.errorUrlPrefix = problem.errorUrlPrefix;
-        this.instance = problem.instance;
-        this.detail = problem.detail;
-        this.type =
-            problem
-                .type
-                .startsWith(problem.errorUrlPrefix)
-                ? problem.type
-                : `${problem.errorUrlPrefix}${problem.type}`;
-
+        this.http = problem.http
+        this.type = problem.type
         this.title = problem.title;
-        this.status = problem.status;
-        this.skipFields = problem.skipFields || [];
-        this.parsedJSON = problem.parsedJSON;
-        this.validationErrors = problem.validationErrors
-        this.location = problem.location;
-        this.refs = problem.refs;
-
-        // initiate miscalleneous keys
-        for (let key in problem) {
-            if (this.skipFields.includes(key))
-                continue;
+        this.detail = problem.detail;
+        this.instance = problem.instance;
+        this.stack = problem.stack;
+        keys?.map((key) => {
             this[key] = problem[key];
-        }
+        })
     }
+
+    static copy(problem: Problem, mode: COPY_MODE, props: string[]): Problem {
+        switch (mode) {
+            case COPY_MODE.LEAVE_PROPS:
+                return new this(problem, props);
+            case COPY_MODE.SKIP_PROPS:
+            default:
+                let keysToBeCopied: string[] = [];
+                for (let key in problem) {
+                    if (props.includes(key))
+                        continue;
+                    keysToBeCopied.push(key)
+                }
+                return new this(problem, keysToBeCopied)
+
+        }
+    };
 
     static toJSON(problem: AsyncApiProblem, includeStack = false): Problem {
 
         const { name, message, stack, ...rest } = problem;
-        
+
         const jsonObject = {
             ...rest
         }
