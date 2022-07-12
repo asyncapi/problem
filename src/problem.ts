@@ -14,7 +14,7 @@ export class AsyncApiProblem extends Error implements Problem {
     [key: string]: any;
 
 
-    constructor(problem: Problem, keys?: string[]) {
+    constructor(problem: Problem, customKeys?: string[]) {
         super(problem.detail || problem.title);
         this.http = problem.http
         this.type = problem.type
@@ -22,15 +22,17 @@ export class AsyncApiProblem extends Error implements Problem {
         this.detail = problem.detail;
         this.instance = problem.instance;
         this.stack = problem.stack;
-        keys?.map((key) => {
-            this[key] = problem[key];
+        customKeys?.map((customKey) => {
+            this[customKey] = problem[customKey];
         })
     }
 
     static copy(problem: Problem, mode: COPY_MODE, props: string[]): Problem {
         switch (mode) {
+
             case COPY_MODE.LEAVE_PROPS:
                 return new this(problem, props);
+
             case COPY_MODE.SKIP_PROPS:
             default:
                 let keysToBeCopied: string[] = [];
@@ -40,7 +42,6 @@ export class AsyncApiProblem extends Error implements Problem {
                     keysToBeCopied.push(key)
                 }
                 return new this(problem, keysToBeCopied)
-
         }
     };
 
