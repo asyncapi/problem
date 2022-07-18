@@ -1,11 +1,11 @@
-import { httpObject, Problem } from "types";
+import { httpObject, ProblemInterface } from "types";
 
 enum COPY_MODE {
     SKIP_PROPS = 'skipProps',
     LEAVE_PROPS = 'leaveProps'
 }
 
-export class AsyncApiProblem extends Error implements Problem {
+export class Problem extends Error implements ProblemInterface {
     public type: string;
     public title: string;
     public instance?: string;
@@ -14,7 +14,7 @@ export class AsyncApiProblem extends Error implements Problem {
     [key: string]: any;
 
 
-    constructor(problem: Problem, customKeys?: string[]) {
+    constructor(problem: ProblemInterface, customKeys?: string[]) {
         super(problem.detail || problem.title);
         this.http = problem.http
         this.type = problem.type
@@ -27,11 +27,11 @@ export class AsyncApiProblem extends Error implements Problem {
         })
     }
 
-   copy(problem: Problem, mode: COPY_MODE, props: string[]): AsyncApiProblem {
+   copy(problem: ProblemInterface, mode: COPY_MODE, props: string[]): Problem {
         switch (mode) {
 
             case COPY_MODE.LEAVE_PROPS:
-                return new this(problem, props);
+                return new Problem(problem, props);
 
             case COPY_MODE.SKIP_PROPS:
             default:
@@ -41,11 +41,11 @@ export class AsyncApiProblem extends Error implements Problem {
                         continue;
                     keysToBeCopied.push(key)
                 }
-                return new this(problem, keysToBeCopied)
+                return new Problem(problem, keysToBeCopied)
         }
     };
 
-   toJSON(problem: AsyncApiProblem, includeStack = false): Problem {
+   toJSON(problem: Problem, includeStack = false): ProblemInterface {
 
         const { name, message, stack, ...rest } = problem;
 

@@ -1,7 +1,7 @@
-export type Problem = {
+export type ProblemInterface = {
     http?: httpObject,
     type: string,
-    title: string,          // Title should be description of Status Code if type is not present.
+    title: string,          // Title should be description of http status, if type is not present.
     detail?: string,
     instance?: string,      // Details to reproduce the error.
     stack?: string;
