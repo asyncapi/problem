@@ -1,5 +1,5 @@
 export type Problem = {
-    http: httpObject,
+    http?: httpObject,
     type: string,
     title: string,          // Title should be description of Status Code if type is not present.
     detail?: string,
