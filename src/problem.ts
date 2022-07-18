@@ -27,7 +27,7 @@ export class AsyncApiProblem extends Error implements Problem {
         })
     }
 
-    static copy(problem: Problem, mode: COPY_MODE, props: string[]): Problem {
+   copy(problem: Problem, mode: COPY_MODE, props: string[]): AsyncApiProblem {
         switch (mode) {
 
             case COPY_MODE.LEAVE_PROPS:
