@@ -45,7 +45,7 @@ export class AsyncApiProblem extends Error implements Problem {
         }
     };
 
-    static toJSON(problem: AsyncApiProblem, includeStack = false): Problem {
+   toJSON(problem: AsyncApiProblem, includeStack = false): Problem {
 
         const { name, message, stack, ...rest } = problem;
 
