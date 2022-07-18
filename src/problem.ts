@@ -10,7 +10,7 @@ export class AsyncApiProblem extends Error implements Problem {
     public title: string;
     public instance?: string;
     public detail?: string;
-    public http: httpObject
+    public http?: httpObject
     [key: string]: any;
 
 
