@@ -6,6 +6,10 @@
     "lib": [
       "esnext"
     ],
+    "paths": {
+      "@types":["./src/types"]
+    },
+    "composite": true,
     "declaration": true,
     "allowJs": true,
     "skipLibCheck": true,
@@ -19,7 +23,12 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
   },
+  
   "include": [
     "src"
+  ],
+  "exclude": [
+    "__tests__",
+    "./lib"
   ]
 }
