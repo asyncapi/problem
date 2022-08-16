@@ -1,4 +1,9 @@
-import { httpObject, ProblemInterface } from "./types";
+import {
+  httpObject,
+  ProblemInterface,
+  ToJsonParamType,
+  UpdateProblemParamType,
+} from "./types";
 
 export enum COPY_MODE {
   SKIP_PROPS = "skipProps",
@@ -45,15 +50,28 @@ export class Problem extends Error implements ProblemInterface {
     }
   }
 
-  toJSON(problem: Problem, includeStack = false): ProblemInterface {
-    const { name, message, stack, ...rest } = problem;
+  toJSON({ includeStack = false, stringify = false }: ToJsonParamType) {
+    const thisContext = this;
+    const { stack, ...rest } = thisContext;
 
-    const jsonObject = {
-      ...rest,
-    };
+    if (includeStack) {
+      if (stringify) return JSON.stringify(thisContext);
+      return {
+        ...thisContext,
+        stack: this.stack,
+      };
+    }
 
-    if (includeStack) jsonObject.stack = stack;
+    if (stringify) return JSON.stringify({ ...rest });
+    return { ...rest };
+  }
 
-    return jsonObject;
+  isOfType = (type: string) => this.type === type;
+
+  async update({ updates }: UpdateProblemParamType) {
+    const thisContext = this;
+    await Object.keys(updates).forEach((i) => {
+      thisContext[i] = updates[i];
+    }, thisContext);
   }
 }
