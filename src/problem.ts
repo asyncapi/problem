@@ -50,7 +50,7 @@ export class Problem extends Error implements ProblemInterface {
     }
   }
 
-  toJSON({ includeStack = false, stringify = false }: ToJsonParamType) {
+  toJSON({ includeStack = false }: ToJsonParamType) {
     const thisContext = this;
     const { stack, ...rest } = thisContext;
 
