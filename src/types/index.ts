@@ -21,5 +21,4 @@ export type UpdateProblemParamType = {
 
 export type ToJsonParamType = {
   includeStack?:boolean
-  stringify?:boolean
 }
