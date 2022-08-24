@@ -62,7 +62,6 @@ export class Problem extends Error implements ProblemInterface {
       };
     }
 
-    if (stringify) return JSON.stringify({ ...rest });
     return { ...rest };
   }
 
