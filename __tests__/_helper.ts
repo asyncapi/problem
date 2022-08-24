@@ -1,4 +1,4 @@
-import { Problem } from "../src/index"
+import { Problem } from "../src"
 import { ProblemInterface } from "../src/types"
 
 export default class ProblemContextHelper {
