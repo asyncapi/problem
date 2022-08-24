@@ -67,10 +67,5 @@ describe("Class Methods Test Suite", () => {
     expect(_problem.toJSON({ includeStack: false })).not.toHaveProperty(
       "stack"
     );
-
-    // stringified stack
-    expect(_problem.toJSON({ includeStack: true, stringify: true })).toBe(
-      JSON.stringify({ ..._problem })
-    );
   });
 });
