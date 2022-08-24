@@ -66,7 +66,9 @@ export class Problem extends Error implements ProblemInterface {
     return { ...rest };
   }
 
-  isOfType = (type: string) => this.type === type;
+  isOfType(type: string) {
+    return this.type === type;
+  }
 
   async update({ updates }: UpdateProblemParamType) {
     const thisContext = this;
