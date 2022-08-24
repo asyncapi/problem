@@ -6,9 +6,6 @@
     "lib": [
       "esnext"
     ],
-    "paths": {
-      "@types":["./src/types"]
-    },
     "composite": true,
     "declaration": true,
     "allowJs": true,
