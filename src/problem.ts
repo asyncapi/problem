@@ -51,12 +51,11 @@ export class Problem extends Error implements ProblemInterface {
   }
 
   toJSON({ includeStack = false }: ToJsonParamType) {
-    const thisContext = this;
-    const { stack, ...rest } = thisContext;
+    const { stack, ...rest } = this;
 
     if (includeStack) {
       return {
-        ...thisContext,
+        ...this,
         stack: this.stack,
       };
     }
