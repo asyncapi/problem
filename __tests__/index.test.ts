@@ -6,7 +6,8 @@ const _testContext = new ProblemContextHelper();
 describe("Class Methods Test Suite", () => {
   test("Create Class with Custom Keys", () => {
     const customKey = "RCA";
-    const testProblem = new Problem(_testContext._problemInstance, ["RCA"]);
+    _testContext._problemInstance[customKey]="Root Cause Analysis"
+    const testProblem = new Problem(_testContext._problemInstance);
     expect(testProblem).toHaveProperty(customKey);
   });
 

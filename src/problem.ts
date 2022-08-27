@@ -1,3 +1,4 @@
+import { DEFAULT_KEYS } from "./constants";
 import {
   httpObject,
   ProblemInterface,
@@ -26,9 +27,11 @@ export class Problem extends Error implements ProblemInterface {
     this.detail = problem.detail;
     this.instance = problem.instance;
     this.stack = problem.stack;
-    customKeys?.map((customKey) => {
-      this[customKey] = problem[customKey];
-    });
+
+    // add extra keys
+    Object.keys(problem)
+      .filter((el) => !DEFAULT_KEYS.includes(el))
+      .forEach((k) => (this[k] = problem[k]));
   }
 
   copy(problem: ProblemInterface, mode: COPY_MODE, props: string[]): Problem {
