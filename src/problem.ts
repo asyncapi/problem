@@ -55,7 +55,6 @@ export class Problem extends Error implements ProblemInterface {
     const { stack, ...rest } = thisContext;
 
     if (includeStack) {
-      if (stringify) return JSON.stringify(thisContext);
       return {
         ...thisContext,
         stack: this.stack,
@@ -70,9 +69,8 @@ export class Problem extends Error implements ProblemInterface {
   }
 
   async update({ updates }: UpdateProblemParamType) {
-    const thisContext = this;
     await Object.keys(updates).forEach((i) => {
-      thisContext[i] = updates[i];
-    }, thisContext);
+      this[i] = updates[i];
+    });
   }
 }
