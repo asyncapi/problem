@@ -34,7 +34,7 @@ export class Problem extends Error implements ProblemInterface {
       .forEach((k) => (this[k] = problem[k]));
   }
 
-  copy(problem: ProblemInterface, mode: COPY_MODE, props: string[]): Problem {
+  copy(mode: COPY_MODE = COPY_MODE.LEAVE_PROPS, props: string[] = []): Problem {
     switch (mode) {
       case COPY_MODE.LEAVE_PROPS:
         return new Problem(problem, props);
