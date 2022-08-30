@@ -70,8 +70,8 @@ export class Problem extends Error implements ProblemInterface {
     return this.type === type;
   }
 
-  async update({ updates }: UpdateProblemParamType) {
-    await Object.keys(updates).forEach((i) => {
+  update({ updates }: UpdateProblemParamType) {
+   Object.keys(updates).forEach((i) => {
       this[i] = updates[i];
     });
   }
