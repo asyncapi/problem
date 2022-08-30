@@ -19,7 +19,9 @@ export class Problem extends Error implements ProblemInterface {
   public http?: httpObject;
   [key: string]: any;
 
-  constructor(problem: ProblemInterface, customKeys?: string[]) {
+  constructor(
+    protected readonly problem: ProblemInterface,
+  ) {
     super(problem.detail || problem.title);
     this.http = problem.http;
     this.type = problem.type;
