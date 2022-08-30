@@ -10,7 +10,7 @@ export type ProblemInterface = {
   [key: string]: any; // Custom Field of Problem
 };
 
-export type httpObject = {
+export type HttpObject = {
   status: number; // Status Code
   [key: string]: any;
 };
