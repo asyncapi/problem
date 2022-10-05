@@ -2,12 +2,12 @@ import { Problem } from "../problem";
 
 export type ProblemInterface = {
   type: string;
-  title: string; // Title should be description of http status, if type is not present.
-  http?: httpObject;
+  title: string;
+  http?: HttpObject;
   detail?: string;
-  instance?: string; // Details to reproduce the error.
+  instance?: string;
   stack?: string;
-  [key: string]: any; // Custom Field of Problem
+  [key: string]: any;
 };
 
 export type HttpObject = {

@@ -1,4 +1,5 @@
-import { COPY_MODE, Problem } from "../src";
+import { Problem } from "../src";
+import { COPY_MODE } from "../src/constants";
 import ProblemContextHelper from "./_helper";
 
 const _testContext = new ProblemContextHelper();
@@ -13,7 +14,6 @@ describe("Class Methods Test Suite", () => {
 
   test("Method: Copy, mode: LEAVE_PROPS", () => {
     const _problemCopy = _testContext._problemInstance.copy(
-      _testContext._problemInstance,
       COPY_MODE.LEAVE_PROPS,
       []
     );
@@ -24,7 +24,6 @@ describe("Class Methods Test Suite", () => {
 
   test("Method: Copy, mode: SKIP_PROPS", () => {
     const _copiedProblem = _testContext._problemInstance.copy(
-      _testContext._problemInstance,
       COPY_MODE.SKIP_PROPS,
       ["details"]
     );

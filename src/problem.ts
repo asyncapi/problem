@@ -1,27 +1,22 @@
 import { DEFAULT_KEYS } from "./constants";
 import {
-  httpObject,
+  HttpObject,
   ProblemInterface,
   ToJsonParamType,
   UpdateProblemParamType,
 } from "./types";
 
-export enum COPY_MODE {
-  SKIP_PROPS = "skipProps",
-  LEAVE_PROPS = "leaveProps",
-}
+import { COPY_MODE } from "./constants";
 
 export class Problem extends Error implements ProblemInterface {
   public type: string;
   public title: string;
   public instance?: string;
   public detail?: string;
-  public http?: httpObject;
+  public http?: HttpObject;
   [key: string]: any;
 
-  constructor(
-    protected readonly problem: ProblemInterface,
-  ) {
+  constructor(protected readonly problem: ProblemInterface) {
     super(problem.detail || problem.title);
     this.http = problem.http;
     this.type = problem.type;
@@ -39,19 +34,21 @@ export class Problem extends Error implements ProblemInterface {
   copy(mode: COPY_MODE = COPY_MODE.LEAVE_PROPS, props: string[] = []): Problem {
     switch (mode) {
       case COPY_MODE.LEAVE_PROPS:
-        return new Problem(problem, props);
+        const newProblem = new Problem(this.problem);
+        props.forEach((prop) => (newProblem[prop] = undefined));
+        return newProblem;
 
       case COPY_MODE.SKIP_PROPS:
-      default:
+      default: {
+        const newProblem = new Problem(this.problem);
         let keysToBeCopied: string[] = [];
-        for (let key in problem) {
-          if (props.includes(key)) continue;
+        for (let key in newProblem) {
+          // Default Keys cannot be skipped
+          if (props.includes(key) && !DEFAULT_KEYS.includes(key)) continue;
           keysToBeCopied.push(key);
         }
-        return new Problem(
-          { type: problem.type, title: problem.title },
-          keysToBeCopied
-        );
+        return newProblem;
+      }
     }
   }
 
@@ -73,7 +70,7 @@ export class Problem extends Error implements ProblemInterface {
   }
 
   update({ updates }: UpdateProblemParamType) {
-   Object.keys(updates).forEach((i) => {
+    Object.keys(updates).forEach((i) => {
       this[i] = updates[i];
     });
   }

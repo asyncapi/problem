@@ -12,8 +12,8 @@ export default class ProblemContextHelper {
     }
 
 
-    constructor(customKeys?:string[]) {
-        this._problemInstance = new Problem(this._instanceOptions, customKeys);
+    constructor() {
+        this._problemInstance = new Problem(this._instanceOptions);
     }
 
 }

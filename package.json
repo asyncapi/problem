@@ -4,11 +4,12 @@
   "description": "AsyncAPI Problem interface",
   "scripts": {
     "build": "tsc",
-    "test": "cross-env CI=true jest --coverage __tests__/*.test.ts",
+    "test": "cross-env CI=true jest --coverage",
     "lint": "eslint --no-error-on-unmatched-pattern --max-warnings 0 --config \".eslintrc\" \".\"",
     "lint:fix": "eslint --no-error-on-unmatched-pattern --max-warnings 0 --config \".eslintrc\" \".\" --fix",
     "generate:readme:toc": "markdown-toc -i \"README.md\""
   },
+  
   "bugs": {
     "url": "https://github.com/imabp/asyncapi_problem/issues"
   },
