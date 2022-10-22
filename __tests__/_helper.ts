@@ -8,7 +8,9 @@ export default class ProblemContextHelper {
     _instanceOptions: ProblemInterface = {
         type: "null-or-falsey-document",
         title: "The AsyncAPI document is null or a JS falsey value.",
-        detail: "The AsyncAPI document is null or a JS falsey value."
+        detail: "The AsyncAPI document is null or a JS falsey value.",
+        leaveThisWhenCopy:"This is used to test copy function: LEAVE PROPS. This will not be undefined in new copy. ",
+        skipThisWhenCopy:"This is used to test copy functionL SKIP PROPS. This should be undefined in new copy.",
     }
 
 

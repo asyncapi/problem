@@ -15,19 +15,21 @@ describe("Class Methods Test Suite", () => {
   test("Method: Copy, mode: LEAVE_PROPS", () => {
     const _problemCopy = _testContext._problemInstance.copy(
       COPY_MODE.LEAVE_PROPS,
-      []
+      ["leaveThisWhenCopy"]
     );
     expect(_problemCopy).toBeInstanceOf(Problem);
     expect(_problemCopy.type).toBe(_testContext._problemInstance.type);
     expect(_problemCopy.title).toBe(_testContext._problemInstance.title);
+    expect(_problemCopy.leaveThisWhenCopy).toBe(_testContext._problemInstance.leaveThisWhenCopy);
   });
 
   test("Method: Copy, mode: SKIP_PROPS", () => {
     const _copiedProblem = _testContext._problemInstance.copy(
       COPY_MODE.SKIP_PROPS,
-      ["details"]
+      ["skipThisWhenCopy"]
     );
-    expect(_copiedProblem.details).toBeUndefined();
+    expect(_copiedProblem).toBeInstanceOf(Problem);
+    expect(_copiedProblem.skipThisWhenCopy).toBeUndefined();
   });
 
   test("Method: isOfType", () => {

@@ -7,7 +7,7 @@ import {
 } from "./types";
 
 import { COPY_MODE } from "./constants";
-
+import { objectToProblemMap } from "./util";
 export class Problem extends Error implements ProblemInterface {
   public type: string;
   public title: string;
@@ -33,20 +33,30 @@ export class Problem extends Error implements ProblemInterface {
 
   copy(mode: COPY_MODE = COPY_MODE.LEAVE_PROPS, props: string[] = []): Problem {
     switch (mode) {
-      case COPY_MODE.LEAVE_PROPS:
-        const newProblem = new Problem(this.problem);
-        props.forEach((prop) => (newProblem[prop] = undefined));
+      // returns a new problem object with preserved keys passed as props
+      case COPY_MODE.LEAVE_PROPS:{
+        let newProblemKeyValuePairs:Record<string,any> = {
+          type: this.problem.type,
+          title:this.problem.title,
+        }
+        props.forEach((key)=>{
+          newProblemKeyValuePairs={...newProblemKeyValuePairs, [key]:this.problem[key]}
+        })
+        const newProblem = new Problem(objectToProblemMap(newProblemKeyValuePairs));
         return newProblem;
-
+      }
+      // skip the copy of keys
       case COPY_MODE.SKIP_PROPS:
       default: {
-        const newProblem = new Problem(this.problem);
-        let keysToBeCopied: string[] = [];
-        for (let key in newProblem) {
-          // Default Keys cannot be skipped
+        let newProblemKeyValuePairs:Record<string,any>={};
+
+        // loop to copy only the required keys
+        for (let key in this.problem) {
+          // Skip only those keys, which are given in props and NOT a default key.
           if (props.includes(key) && !DEFAULT_KEYS.includes(key)) continue;
-          keysToBeCopied.push(key);
+          newProblemKeyValuePairs[key] = this.problem[key];
         }
+        const newProblem = new Problem(objectToProblemMap(newProblemKeyValuePairs))
         return newProblem;
       }
     }
