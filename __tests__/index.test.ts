@@ -20,7 +20,9 @@ describe("Class Methods Test Suite", () => {
     expect(_problemCopy).toBeInstanceOf(Problem);
     expect(_problemCopy.type).toBe(_testContext._problemInstance.type);
     expect(_problemCopy.title).toBe(_testContext._problemInstance.title);
+    // check if skipthiswhencopy is omitted.
     expect(_problemCopy.skipThisWhenCopy).toBe(undefined);
+    // check if leavethiswhencopy is not omitted
     expect(_problemCopy.leaveThisWhenCopy).toBe(_testContext._problemInstance.leaveThisWhenCopy);
   });
 
@@ -30,7 +32,9 @@ describe("Class Methods Test Suite", () => {
       ["skipThisWhenCopy"]
     );
     expect(_copiedProblem).toBeInstanceOf(Problem);
+    // check if leavethiswhencopy is not emitted.
     expect(_copiedProblem.leaveThisWhenCopy).toBe(_testContext._problemInstance.leaveThisWhenCopy);
+    // check if skipthis is omitted
     expect(_copiedProblem.skipThisWhenCopy).toBeUndefined();
   });
 
