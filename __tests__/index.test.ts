@@ -21,6 +21,7 @@ describe("Class Methods Test Suite", () => {
     expect(_problemCopy.type).toBe(_testContext._problemInstance.type);
     expect(_problemCopy.title).toBe(_testContext._problemInstance.title);
     expect(_problemCopy.leaveThisWhenCopy).toBe(_testContext._problemInstance.leaveThisWhenCopy);
+    expect(_problemCopy.skipThisWhenCopy).toBe(undefined);
   });
 
   test("Method: Copy, mode: SKIP_PROPS", () => {
@@ -30,6 +31,7 @@ describe("Class Methods Test Suite", () => {
     );
     expect(_copiedProblem).toBeInstanceOf(Problem);
     expect(_copiedProblem.skipThisWhenCopy).toBeUndefined();
+    expect(_copiedProblem.leaveThisWhenCopy).toBe(_testContext._problemInstance.leaveThisWhenCopy);
   });
 
   test("Method: isOfType", () => {
