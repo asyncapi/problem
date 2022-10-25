@@ -1,14 +1,24 @@
-export type ProblemInterface = {
-    http?: httpObject,
-    type: string,
-    title: string,          // Title should be description of http status, if type is not present.
-    detail?: string,
-    instance?: string,      // Details to reproduce the error.
-    stack?: string;
-    [key: string]: any,      // Custom Field of Problem
-}
+import { Problem } from "../problem";
 
-export type httpObject= {
-    status: number,          // Status Code
-    [key: string]: any,
+export type ProblemInterface = {
+  type: string;
+  title: string;
+  http?: HttpObject;
+  detail?: string;
+  instance?: string;
+  stack?: string;
+  [key: string]: any;
+};
+
+export type HttpObject = {
+  status: number; // Status Code
+  [key: string]: any;
+};
+
+export type UpdateProblemParamType = {
+  updates: { [key: string]: any };
+};
+
+export type ToJsonParamType = {
+  includeStack?:boolean
 }

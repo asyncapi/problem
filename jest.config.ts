@@ -26,6 +26,9 @@ const config: Config.InitialOptions = {
   collectCoverageFrom: [
     'src/**'
   ],
+  testPathIgnorePatterns: [
+    "__tests__/_helper.ts"
+  ]
 };
 
 export default config;

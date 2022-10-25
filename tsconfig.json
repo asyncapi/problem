@@ -6,6 +6,7 @@
     "lib": [
       "esnext"
     ],
+    "composite": true,
     "declaration": true,
     "allowJs": true,
     "skipLibCheck": true,
@@ -19,7 +20,12 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
   },
+  
   "include": [
     "src"
+  ],
+  "exclude": [
+    "__tests__",
+    "./lib"
   ]
 }
