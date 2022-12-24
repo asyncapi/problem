@@ -1,5 +1,3 @@
-import { Problem } from "../problem";
-
 export type ProblemInterface = {
   type: string;
   title: string;
@@ -20,5 +18,5 @@ export type UpdateProblemParamType = {
 };
 
 export type ToJsonParamType = {
-  includeStack?:boolean
-}
+  includeStack?: boolean;
+};

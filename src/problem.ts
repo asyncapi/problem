@@ -4,7 +4,7 @@ import {
   ProblemInterface,
   ToJsonParamType,
   UpdateProblemParamType,
-} from "./types";
+} from "./@types";
 
 import { COPY_MODE } from "./constants";
 import { objectToProblemMap } from "./util";
@@ -34,21 +34,26 @@ export class Problem extends Error implements ProblemInterface {
   copy(mode: COPY_MODE = COPY_MODE.LEAVE_PROPS, props: string[] = []): Problem {
     switch (mode) {
       // returns a new problem object with preserved keys passed as props
-      case COPY_MODE.LEAVE_PROPS:{
-        let newProblemKeyValuePairs:Record<string,any> = {
+      case COPY_MODE.LEAVE_PROPS: {
+        let newProblemKeyValuePairs: Record<string, any> = {
           type: this.problem.type,
-          title:this.problem.title,
-        }
-        props.forEach((key)=>{
-          newProblemKeyValuePairs={...newProblemKeyValuePairs, [key]:this.problem[key]}
-        })
-        const newProblem = new Problem(objectToProblemMap(newProblemKeyValuePairs));
+          title: this.problem.title,
+        };
+        props.forEach((key) => {
+          newProblemKeyValuePairs = {
+            ...newProblemKeyValuePairs,
+            [key]: this.problem[key],
+          };
+        });
+        const newProblem = new Problem(
+          objectToProblemMap(newProblemKeyValuePairs)
+        );
         return newProblem;
       }
       // skip the copy of keys
       case COPY_MODE.SKIP_PROPS:
       default: {
-        let newProblemKeyValuePairs:Record<string,any>={};
+        let newProblemKeyValuePairs: Record<string, any> = {};
 
         // loop to copy only the required keys
         for (let key in this.problem) {
@@ -56,7 +61,9 @@ export class Problem extends Error implements ProblemInterface {
           if (props.includes(key) && !DEFAULT_KEYS.includes(key)) continue;
           newProblemKeyValuePairs[key] = this.problem[key];
         }
-        const newProblem = new Problem(objectToProblemMap(newProblemKeyValuePairs))
+        const newProblem = new Problem(
+          objectToProblemMap(newProblemKeyValuePairs)
+        );
         return newProblem;
       }
     }
