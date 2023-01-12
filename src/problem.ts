@@ -1,94 +1,114 @@
-import { DEFAULT_KEYS } from "./constants";
-import {
-  HttpObject,
+import { serializeType, getDeepProperty } from "./utils";
+
+import type {
   ProblemInterface,
-  ToJsonParamType,
-  UpdateProblemParamType,
-} from "./@types";
+  ProblemOptions,
+  CopyProblemOptions,
+  ToObjectProblemOptions,
+  StringifyProblemOptions,
+  UpdateProblemOptions,
+  Constructable,
+  Path,
+  PathValue
+} from "./types";
 
-import { COPY_MODE } from "./constants";
-import { objectToProblemMap } from "./util";
-export class Problem extends Error implements ProblemInterface {
-  public type: string;
-  public title: string;
-  public instance?: string;
-  public detail?: string;
-  public http?: HttpObject;
-  [key: string]: any;
+const defaultToObjectOptions: ToObjectProblemOptions = {
+  includeStack: false, 
+  includeCause: false,
+}
 
-  constructor(protected readonly problem: ProblemInterface) {
+const defaultStringifyOptions: StringifyProblemOptions = {
+  includeStack: false, 
+  includeCause: false,
+}
+
+export class Problem<T extends Record<string, any> = Record<string, any>> extends Error {
+  static parse(problem: string, reviver?: (this: any, key: string, value: any) => any, options?: ProblemOptions) {
+    const parsedProblem = JSON.parse(problem, reviver);
+    return new this(parsedProblem, options);
+  }
+
+  static throw(problem: ProblemInterface): never {
+    throw new Problem(problem);
+  }
+
+  constructor(
+    protected readonly problem: ProblemInterface & T,
+    protected readonly options: ProblemOptions = {},
+  ) {
     super(problem.detail || problem.title);
-    this.http = problem.http;
-    this.type = problem.type;
-    this.title = problem.title;
-    this.detail = problem.detail;
-    this.instance = problem.instance;
-    this.stack = problem.stack;
-
-    // add extra keys
-    Object.keys(problem)
-      .filter((el) => !DEFAULT_KEYS.includes(el))
-      .forEach((k) => (this[k] = problem[k]));
+    
+    this.problem.type = serializeType(this.problem.type);
+    this.cause = problem.cause || this.cause;
+    this.stack = problem.stack || this.stack;
   }
 
-  copy(mode: COPY_MODE = COPY_MODE.LEAVE_PROPS, props: string[] = []): Problem {
+  get(): ProblemInterface & T;
+  get<R = ProblemInterface & T, P extends Path<R> = any, PV = PathValue<R, P>>(path: P): PV;
+  get<R = ProblemInterface & T, P extends Path<R> = any, PV = PathValue<R, P>>(path?: P): PV | (ProblemInterface & T) {
+    if (typeof path !== 'string') {
+      return this.problem as ProblemInterface & T;
+    }
+    return getDeepProperty(this.problem, path) as PV;
+  }
+
+  copy(options?: CopyProblemOptions<Array<keyof Omit<ProblemInterface & T, 'type' | 'title'>>>): Problem {
+    const clazz = this.constructor as Constructable;
+    if (!options) {
+      return new clazz({ ...this.problem }, { ...this.options });
+    }
+
+    const newProblem: Record<string, any> = {
+      type: this.problem.type,
+      title: this.problem.title,
+    };
+    const { mode, properties } = options;
+
     switch (mode) {
-      // returns a new problem object with preserved keys passed as props
-      case COPY_MODE.LEAVE_PROPS: {
-        let newProblemKeyValuePairs: Record<string, any> = {
-          type: this.problem.type,
-          title: this.problem.title,
-        };
-        props.forEach((key) => {
-          newProblemKeyValuePairs = {
-            ...newProblemKeyValuePairs,
-            [key]: this.problem[key],
-          };
+      case 'leaveProps': {
+        properties?.forEach(property => {
+          newProblem[property as string] = this.problem[property];
         });
-        const newProblem = new Problem(
-          objectToProblemMap(newProblemKeyValuePairs)
-        );
-        return newProblem;
-      }
-      // skip the copy of keys
-      case COPY_MODE.SKIP_PROPS:
-      default: {
-        let newProblemKeyValuePairs: Record<string, any> = {};
-
-        // loop to copy only the required keys
-        for (let key in this.problem) {
-          // Skip only those keys, which are given in props and NOT a default key.
-          if (props.includes(key) && !DEFAULT_KEYS.includes(key)) continue;
-          newProblemKeyValuePairs[key] = this.problem[key];
-        }
-        const newProblem = new Problem(
-          objectToProblemMap(newProblemKeyValuePairs)
-        );
-        return newProblem;
+        break;
+      };
+      case 'skipProps': {
+        Object.keys(this.problem).forEach(property => {
+          if (!properties?.includes(property)) {
+            newProblem[property as string] = this.problem[property];
+          }
+        });
       }
     }
+
+    return new clazz(newProblem, { ...this.options });
   }
 
-  toJSON({ includeStack = false }: ToJsonParamType) {
-    const { stack, ...rest } = this;
+  toObject(options: ToObjectProblemOptions = defaultToObjectOptions): ProblemInterface & T {
+    const problem = { ...this.problem };
 
-    if (includeStack) {
-      return {
-        ...this,
-        stack: this.stack,
-      };
+    if (!options.includeStack) {
+      delete problem.stack;
+    }
+    if (!options.includeCause) {
+      delete problem.cause;
     }
 
-    return { ...rest };
+    return problem;
+  }
+
+  stringify(options?: StringifyProblemOptions, replacer?: (this: any, key: string, value: any) => any, space?: string | number): string;
+  stringify(options?: StringifyProblemOptions, replacer?: (number | string)[] | null, space?: string | number): string;
+  stringify(options: StringifyProblemOptions = defaultStringifyOptions, replacer?: ((this: any, key: string, value: any) => any) | ((number | string)[] | null), space?: string | number): string {
+    return JSON.stringify(this.toObject(options), replacer as any, space);
   }
 
   isOfType(type: string) {
-    return this.type === type;
+    return this.problem.type === type;
   }
 
-  update({ updates }: UpdateProblemParamType) {
-    Object.keys(updates).forEach((i) => {
-      this[i] = updates[i];
+  update({ updates }: UpdateProblemOptions<ProblemInterface & T>) {
+    Object.keys(updates).forEach(key => {
+      this.problem[key as keyof ProblemInterface & T] = updates[key as keyof ProblemInterface & T];
     });
   }
 }
