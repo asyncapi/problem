@@ -8,8 +8,6 @@
     "noUnusedLocals": false,
     "removeComments": true,
     "noLib": false,
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
     "target": "ES2015",
     "sourceMap": true,
     "allowJs": true,
