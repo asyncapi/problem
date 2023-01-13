@@ -27,7 +27,7 @@ const config: Config.InitialOptions = {
     'src/**'
   ],
   testPathIgnorePatterns: [
-    "__tests__/_helper.ts"
+    '__tests__/_helper.ts'
   ]
 };
 

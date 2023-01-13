@@ -7,15 +7,13 @@ export type ProblemBase = {
   cause?: any;
 };
 
-export interface ProblemInterface extends ProblemBase {
-  [key: string]: any;
-};
+export type ProblemInterface = ProblemBase;
 
-export interface ProblemOptions {};
+export interface ProblemOptions {}
 
 export interface MixinProblemOptions {
   typePrefix?: string;
-};
+}
 
 export type CopyProblemOptions<T extends Array<any>> = {
   mode?: 'leaveProps' | 'skipProps';
@@ -23,7 +21,7 @@ export type CopyProblemOptions<T extends Array<any>> = {
 };
 
 export type UpdateProblemOptions<T> = {
-  updates: T;
+  updates: Partial<T>;
 };
 
 export type ToObjectProblemOptions = {

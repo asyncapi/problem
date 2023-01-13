@@ -1,4 +1,4 @@
-import { serializeType, getDeepProperty } from "./utils";
+import { getDeepProperty } from './utils';
 
 import type {
   ProblemInterface,
@@ -9,47 +9,36 @@ import type {
   UpdateProblemOptions,
   Constructable,
   Path,
-  PathValue
-} from "./types";
+  PathValue,
+} from './types';
 
 const defaultToObjectOptions: ToObjectProblemOptions = {
   includeStack: false, 
   includeCause: false,
-}
+};
 
 const defaultStringifyOptions: StringifyProblemOptions = {
   includeStack: false, 
   includeCause: false,
-}
+};
 
-export class Problem<T extends Record<string, any> = Record<string, any>> extends Error {
-  static parse(problem: string, reviver?: (this: any, key: string, value: any) => any, options?: ProblemOptions) {
-    const parsedProblem = JSON.parse(problem, reviver);
-    return new this(parsedProblem, options);
-  }
-
-  static throw(problem: ProblemInterface): never {
-    throw new Problem(problem);
-  }
-
+export class Problem<T extends Record<string, unknown> = {}> extends Error {
   constructor(
     protected readonly problem: ProblemInterface & T,
     protected readonly options: ProblemOptions = {},
   ) {
     super(problem.detail || problem.title);
-    
-    this.problem.type = serializeType(this.problem.type);
     this.cause = problem.cause || this.cause;
     this.stack = problem.stack || this.stack;
   }
 
   get(): ProblemInterface & T;
-  get<R = ProblemInterface & T, P extends Path<R> = any, PV = PathValue<R, P>>(path: P): PV;
-  get<R = ProblemInterface & T, P extends Path<R> = any, PV = PathValue<R, P>>(path?: P): PV | (ProblemInterface & T) {
+  get<P extends Path<ProblemInterface & T>, PV = PathValue<ProblemInterface & T, P>>(path: P): PV;
+  get<P extends Path<ProblemInterface & T>, PV = PathValue<ProblemInterface & T, P>>(path?: P): PV | (ProblemInterface & T) {
     if (typeof path !== 'string') {
       return this.problem as ProblemInterface & T;
     }
-    return getDeepProperty(this.problem, path) as PV;
+    return getDeepProperty(path, this.problem) as PV;
   }
 
   copy(options?: CopyProblemOptions<Array<keyof Omit<ProblemInterface & T, 'type' | 'title'>>>): Problem {
@@ -65,31 +54,31 @@ export class Problem<T extends Record<string, any> = Record<string, any>> extend
     const { mode, properties } = options;
 
     switch (mode) {
-      case 'leaveProps': {
-        properties?.forEach(property => {
+    case 'leaveProps': {
+      properties?.forEach(property => {
+        newProblem[property as string] = this.problem[property];
+      });
+      break;
+    }
+    case 'skipProps': {
+      Object.keys(this.problem).forEach(property => {
+        if (!properties?.includes(property as unknown as keyof Omit<ProblemInterface & T, 'type' | 'title'>)) {
           newProblem[property as string] = this.problem[property];
-        });
-        break;
-      };
-      case 'skipProps': {
-        Object.keys(this.problem).forEach(property => {
-          if (!properties?.includes(property)) {
-            newProblem[property as string] = this.problem[property];
-          }
-        });
-      }
+        }
+      });
+    }
     }
 
     return new clazz(newProblem, { ...this.options });
   }
 
-  toObject(options: ToObjectProblemOptions = defaultToObjectOptions): ProblemInterface & T {
+  toObject({ includeStack, includeCause }: ToObjectProblemOptions = defaultToObjectOptions): ProblemInterface & T {
     const problem = { ...this.problem };
 
-    if (!options.includeStack) {
+    if (!includeStack) {
       delete problem.stack;
     }
-    if (!options.includeCause) {
+    if (!includeCause) {
       delete problem.cause;
     }
 
@@ -108,7 +97,7 @@ export class Problem<T extends Record<string, any> = Record<string, any>> extend
 
   update({ updates }: UpdateProblemOptions<ProblemInterface & T>) {
     Object.keys(updates).forEach(key => {
-      this.problem[key as keyof ProblemInterface & T] = updates[key as keyof ProblemInterface & T];
+      this.problem[key as keyof ProblemInterface & T] = updates[key as keyof ProblemInterface & T] as any;
     });
   }
 }
