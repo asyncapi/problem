@@ -2,8 +2,8 @@
   "name": "@asyncapi/problem",
   "version": "0.0.1",
   "description": "AsyncAPI Problem interface",
-  "type": "commonjs",
-  "main": "./lib/index.js",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "scripts": {
     "build": "tsc",
     "test": "cross-env CI=true jest --coverage",
