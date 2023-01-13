@@ -6,7 +6,6 @@ import type {
   CopyProblemOptions,
   ToObjectProblemOptions,
   StringifyProblemOptions,
-  UpdateProblemOptions,
   Constructable,
   Path,
   PathValue,
@@ -39,6 +38,15 @@ export class Problem<T extends Record<string, unknown> = {}> extends Error {
       return this.problem as ProblemInterface & T;
     }
     return getDeepProperty(path, this.problem) as PV;
+  }
+
+  set(problem: Partial<ProblemInterface & T>): ProblemInterface & T;
+  set<K extends keyof (ProblemInterface & T)>(key: K, value: (ProblemInterface & T)[K]): (ProblemInterface & T)[K];
+  set<K extends keyof (ProblemInterface & T)>(keyOrObject: K | Partial<ProblemInterface & T>, value?: (ProblemInterface & T)[K]): (ProblemInterface & T) | (ProblemInterface & T)[K] {
+    if (typeof keyOrObject !== 'string') {
+      return Object.assign(this.problem, keyOrObject);
+    }
+    return this.problem[keyOrObject] = value;
   }
 
   copy(options?: CopyProblemOptions<Array<keyof Omit<ProblemInterface & T, 'type' | 'title'>>>): Problem {
@@ -93,11 +101,5 @@ export class Problem<T extends Record<string, unknown> = {}> extends Error {
 
   isOfType(type: string) {
     return this.problem.type === type;
-  }
-
-  update({ updates }: UpdateProblemOptions<ProblemInterface & T>) {
-    Object.keys(updates).forEach(key => {
-      this.problem[key as keyof ProblemInterface & T] = updates[key as keyof ProblemInterface & T] as any;
-    });
   }
 }

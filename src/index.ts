@@ -7,7 +7,6 @@ export type {
   ProblemOptions,
   MixinProblemOptions,
   CopyProblemOptions,
-  UpdateProblemOptions,
   ToObjectProblemOptions,
   StringifyProblemOptions,
 } from './types';

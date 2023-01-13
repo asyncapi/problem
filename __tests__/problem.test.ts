@@ -17,6 +17,20 @@ describe('Problem', () => {
     });
   });
 
+  describe('set()', () => {
+    test('should update problem shape', () => {
+      const problem = new Problem({ type: 'test-type', title: 'Some title', detail: 'Some details' });
+      problem.set({ title: 'New title', detail: 'New details' });
+      expect(problem.get()).toEqual({ type: 'test-type', title: 'New title', detail: 'New details' });
+    });
+
+    test('should update problem shape by key', () => {
+      const problem = new Problem({ type: 'test-type', title: 'Some title', detail: 'Some details' });
+      problem.set('title', 'New title');
+      expect(problem.get()).toEqual({ type: 'test-type', title: 'New title', detail: 'Some details' });
+    });
+  });
+
   describe('copy()', () => {
     const problemObject = { type: 'test-type', title: 'Some title', detail: 'Some detail', instance: 'Some instance', stack: 'stack', cause: 'cause' };
     const problem = new Problem(problemObject);
@@ -103,15 +117,6 @@ describe('Problem', () => {
     test('should return false if type is not equal', () => {
       const problem = new Problem({ type: 'test-type', title: '' });
       expect(problem.isOfType('unknown')).toEqual(false);
-    });
-  });
-
-  describe('update()', () => {
-    test('should update problem shape', () => {
-      const problem = new Problem({ type: 'test-type', title: 'Some title', detail: 'Some details' });
-      problem.update({ updates: { title: 'New title', detail: 'New details' } });
-      expect(problem.get('title')).toEqual('New title');
-      expect(problem.get('detail')).toEqual('New details');
     });
   });
 });

@@ -20,10 +20,6 @@ export type CopyProblemOptions<T extends Array<any>> = {
   properties?: T
 };
 
-export type UpdateProblemOptions<T> = {
-  updates: Partial<T>;
-};
-
 export type ToObjectProblemOptions = {
   includeStack?: boolean;
   includeCause?: boolean;
