@@ -22,6 +22,10 @@ const defaultStringifyOptions: StringifyProblemOptions = {
 };
 
 export class Problem<T extends Record<string, unknown> = {}> extends Error {
+  static createType(type: string): string {
+    return type;
+  }
+  
   constructor(
     protected readonly problem: ProblemInterface & T,
     protected readonly options: ProblemOptions = {},

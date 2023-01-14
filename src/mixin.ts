@@ -7,6 +7,10 @@ export function ProblemMixin<T extends Record<string, unknown> = {}>(mixinOption
   const serializedMixinOptions = serializeMixinOptions(mixinOptions);
   
   const clazz = class extends Problem<T> {
+    static override createType(type: string): string {
+      return serializeType(type, serializedMixinOptions);
+    }
+
     constructor(
       protected readonly problem: ProblemInterface & T,
       protected readonly options: ProblemOptions = {},
@@ -17,7 +21,7 @@ export function ProblemMixin<T extends Record<string, unknown> = {}>(mixinOption
   };
 
   if (name) {
-    Object.defineProperty(clazz, 'name', {value: 'name'});
+    Object.defineProperty(clazz, 'name', { value: name });
   }
 
   return clazz as unknown as typeof Problem<T>;

@@ -32,10 +32,12 @@ describe('utils', () => {
       const value1 = getDeepProperty('property', { property: 'value' });
       const value2 = getDeepProperty('deep.deeper.value', { deep: { deeper: { value: 'deep-value' } } });
       const value3 = getDeepProperty('deep.deeper.value.non-existing', { deep: { deeper: { value: 'deep-value' } } });
+      const value4 = getDeepProperty('array.0', { array: ['value'] });
 
       expect(value1).toEqual('value');
       expect(value2).toEqual('deep-value');
       expect(value3).toEqual(undefined);
+      expect(value4).toEqual('value');
     });
   });
 });

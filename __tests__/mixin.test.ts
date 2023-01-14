@@ -31,4 +31,28 @@ describe('ProblemMixin', () => {
     expect(instance).toBeInstanceOf(Problem);
     expect(instance.get('type')).toEqual('https://example.com/test/test-type');
   });
+
+  describe('should use class name passed in arguments', () => {
+    const Problem = ProblemMixin(undefined, undefined, 'ExtendedProblem');
+    expect(Problem.name).toEqual('ExtendedProblem');
+  });
+
+  describe('should use name of defined class ()', () => {
+    class SomeProblem extends ProblemMixin(undefined, undefined, 'ExtendedProblem') {}
+    expect(SomeProblem.name).toEqual('SomeProblem');
+  });
+
+  describe('static createType()', () => {
+    test('should return proper type (with typePrefix)', () => {
+      class Problem extends ProblemMixin({ typePrefix: 'https://example.com/test' }) {}
+      const type = Problem.createType('type');
+      expect(type).toEqual('https://example.com/test/type');
+    });
+
+    test('should return proper type (without typePrefix options)', () => {
+      class Problem extends ProblemMixin({}) {}
+      const type = Problem.createType('type');
+      expect(type).toEqual('type');
+    });
+  });
 });

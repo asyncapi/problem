@@ -1,8 +1,8 @@
 import { MixinProblemOptions } from './types';
 
-export function serializeMixinOptions(options?: MixinProblemOptions): MixinProblemOptions | undefined {
+export function serializeMixinOptions(options?: MixinProblemOptions): MixinProblemOptions {
   if (!options) {
-    return;
+    return {};
   }
 
   options = { ...options };
@@ -22,14 +22,9 @@ export function serializeType(type: string, options?: MixinProblemOptions) {
   return `${typePrefix}/${type}`;
 }
 
-const INFINITY = 1 / 0;
+const MINUS_INFINITY = -(1 / 0);
 function toKey(value: any) {
-  const typeOf = typeof value;
-  if (typeOf === 'string' || typeOf === 'symbol') {
-    return value;
-  }
-  const result = `${value}`;
-  return (result === '0' && (1 / value) === -INFINITY) ? '-0' : result;
+  return (value === '0' && (1 / value) === MINUS_INFINITY) ? '-0' : value;
 }
 
 export function getDeepProperty(path: string | string[], value: object) {

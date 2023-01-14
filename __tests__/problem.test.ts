@@ -119,4 +119,11 @@ describe('Problem', () => {
       expect(problem.isOfType('unknown')).toEqual(false);
     });
   });
+
+  describe('static createType()', () => {
+    test('should return this same type', () => {
+      const type = Problem.createType('type');
+      expect(type).toEqual('type');
+    });
+  });
 });
