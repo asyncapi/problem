@@ -1,34 +1,18 @@
 {
   "compilerOptions": {
-    "outDir": "lib",
-    "baseUrl": "src",
-    "rootDir": "src",
-    "target": "es6",
-    "lib": [
-      "esnext"
-    ],
-    "noEmit": false,
-    "composite": true,
-    "tsBuildInfoFile": ".tsbuildinfo",
+    "outDir": "./lib",
+    "rootDir": "./src",
+    "module": "commonjs",
     "declaration": true,
+    "noImplicitAny": false,
+    "noUnusedLocals": false,
+    "removeComments": true,
+    "noLib": false,
+    "target": "ES2015",
+    "sourceMap": true,
     "allowJs": true,
-    "skipLibCheck": true,
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "strict": true,
-    "forceConsistentCasingInFileNames": true,
-    "noFallthroughCasesInSwitch": true,
-    "module": "esnext",
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
+    "lib": ["ESNext"]
   },
-  
-  "include": [
-    "./src"
-  ],
-  "exclude": [
-    "__tests__",
-    "./lib"
-  ]
+  "include": ["src/*.ts", "src/**/*.ts"],
+  "exclude": ["node_modules"]
 }

@@ -1,94 +1,109 @@
-import { DEFAULT_KEYS } from "./constants";
-import {
-  HttpObject,
+import { getDeepProperty } from './utils';
+
+import type {
   ProblemInterface,
-  ToJsonParamType,
-  UpdateProblemParamType,
-} from "./@types";
+  ProblemOptions,
+  CopyProblemOptions,
+  ToObjectProblemOptions,
+  StringifyProblemOptions,
+  Constructable,
+  Path,
+  PathValue,
+} from './types';
 
-import { COPY_MODE } from "./constants";
-import { objectToProblemMap } from "./util";
-export class Problem extends Error implements ProblemInterface {
-  public type: string;
-  public title: string;
-  public instance?: string;
-  public detail?: string;
-  public http?: HttpObject;
-  [key: string]: any;
+const defaultToObjectOptions: ToObjectProblemOptions = {
+  includeStack: false, 
+  includeCause: false,
+};
 
-  constructor(protected readonly problem: ProblemInterface) {
+const defaultStringifyOptions: StringifyProblemOptions = {
+  includeStack: false, 
+  includeCause: false,
+};
+
+export class Problem<T extends Record<string, unknown> = {}> extends Error {
+  static createType(type: string): string {
+    return type;
+  }
+  
+  constructor(
+    protected readonly problem: ProblemInterface & T,
+    protected readonly options: ProblemOptions = {},
+  ) {
     super(problem.detail || problem.title);
-    this.http = problem.http;
-    this.type = problem.type;
-    this.title = problem.title;
-    this.detail = problem.detail;
-    this.instance = problem.instance;
-    this.stack = problem.stack;
-
-    // add extra keys
-    Object.keys(problem)
-      .filter((el) => !DEFAULT_KEYS.includes(el))
-      .forEach((k) => (this[k] = problem[k]));
+    this.cause = problem.cause || this.cause;
+    this.stack = problem.stack || this.stack;
   }
 
-  copy(mode: COPY_MODE = COPY_MODE.LEAVE_PROPS, props: string[] = []): Problem {
+  get(): ProblemInterface & T;
+  get<P extends Path<ProblemInterface & T>, PV = PathValue<ProblemInterface & T, P>>(path: P): PV;
+  get<P extends Path<ProblemInterface & T>, PV = PathValue<ProblemInterface & T, P>>(path?: P): PV | (ProblemInterface & T) {
+    if (typeof path !== 'string') {
+      return this.problem as ProblemInterface & T;
+    }
+    return getDeepProperty(path, this.problem) as PV;
+  }
+
+  set(problem: Partial<ProblemInterface & T>): ProblemInterface & T;
+  set<K extends keyof (ProblemInterface & T)>(key: K, value: (ProblemInterface & T)[K]): (ProblemInterface & T)[K];
+  set<K extends keyof (ProblemInterface & T)>(keyOrObject: K | Partial<ProblemInterface & T>, value?: (ProblemInterface & T)[K]): (ProblemInterface & T) | (ProblemInterface & T)[K] {
+    if (typeof keyOrObject !== 'string') {
+      return Object.assign(this.problem, keyOrObject);
+    }
+    return this.problem[keyOrObject] = value;
+  }
+
+  copy(options?: CopyProblemOptions<Array<keyof Omit<ProblemInterface & T, 'type' | 'title'>>>): Problem {
+    const clazz = this.constructor as Constructable;
+    if (!options) {
+      return new clazz({ ...this.problem }, { ...this.options });
+    }
+
+    const newProblem: Record<string, any> = {
+      type: this.problem.type,
+      title: this.problem.title,
+    };
+    const { mode, properties } = options;
+
     switch (mode) {
-      // returns a new problem object with preserved keys passed as props
-      case COPY_MODE.LEAVE_PROPS: {
-        let newProblemKeyValuePairs: Record<string, any> = {
-          type: this.problem.type,
-          title: this.problem.title,
-        };
-        props.forEach((key) => {
-          newProblemKeyValuePairs = {
-            ...newProblemKeyValuePairs,
-            [key]: this.problem[key],
-          };
-        });
-        const newProblem = new Problem(
-          objectToProblemMap(newProblemKeyValuePairs)
-        );
-        return newProblem;
-      }
-      // skip the copy of keys
-      case COPY_MODE.SKIP_PROPS:
-      default: {
-        let newProblemKeyValuePairs: Record<string, any> = {};
-
-        // loop to copy only the required keys
-        for (let key in this.problem) {
-          // Skip only those keys, which are given in props and NOT a default key.
-          if (props.includes(key) && !DEFAULT_KEYS.includes(key)) continue;
-          newProblemKeyValuePairs[key] = this.problem[key];
-        }
-        const newProblem = new Problem(
-          objectToProblemMap(newProblemKeyValuePairs)
-        );
-        return newProblem;
-      }
+    case 'leaveProps': {
+      properties?.forEach(property => {
+        newProblem[property as string] = this.problem[property];
+      });
+      break;
     }
+    case 'skipProps': {
+      Object.keys(this.problem).forEach(property => {
+        if (!properties?.includes(property as unknown as keyof Omit<ProblemInterface & T, 'type' | 'title'>)) {
+          newProblem[property as string] = this.problem[property];
+        }
+      });
+    }
+    }
+
+    return new clazz(newProblem, { ...this.options });
   }
 
-  toJSON({ includeStack = false }: ToJsonParamType) {
-    const { stack, ...rest } = this;
+  toObject({ includeStack, includeCause }: ToObjectProblemOptions = defaultToObjectOptions): ProblemInterface & T {
+    const problem = { ...this.problem };
 
-    if (includeStack) {
-      return {
-        ...this,
-        stack: this.stack,
-      };
+    if (!includeStack) {
+      delete problem.stack;
+    }
+    if (!includeCause) {
+      delete problem.cause;
     }
 
-    return { ...rest };
+    return problem;
+  }
+
+  stringify(options?: StringifyProblemOptions, replacer?: (this: any, key: string, value: any) => any, space?: string | number): string;
+  stringify(options?: StringifyProblemOptions, replacer?: (number | string)[] | null, space?: string | number): string;
+  stringify(options: StringifyProblemOptions = defaultStringifyOptions, replacer?: ((this: any, key: string, value: any) => any) | ((number | string)[] | null), space?: string | number): string {
+    return JSON.stringify(this.toObject(options), replacer as any, space);
   }
 
   isOfType(type: string) {
-    return this.type === type;
-  }
-
-  update({ updates }: UpdateProblemParamType) {
-    Object.keys(updates).forEach((i) => {
-      this[i] = updates[i];
-    });
+    return this.problem.type === type;
   }
 }
