@@ -50,7 +50,7 @@ export class Problem<T extends Record<string, unknown> = {}> extends Error {
     if (typeof keyOrObject !== 'string') {
       return Object.assign(this.problem, keyOrObject);
     }
-    return this.problem[keyOrObject] = value;
+    return this.problem[keyOrObject] = value as (ProblemInterface & T)[K];
   }
 
   copy(options?: CopyProblemOptions<Array<keyof Omit<ProblemInterface & T, 'type' | 'title'>>>): Problem {
