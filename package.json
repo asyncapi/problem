@@ -1,6 +1,6 @@
 {
   "name": "@asyncapi/problem",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "AsyncAPI Problem interface",
   "bugs": {
     "url": "https://github.com/asyncapi/problem/issues"
@@ -35,6 +35,7 @@
     "lint:fix": "eslint --no-error-on-unmatched-pattern --max-warnings 0 --config \".eslintrc\" \".\" --fix",
     "generate:readme:toc": "markdown-toc -i \"README.md\"",
     "generate:assets": "npm run build && npm run generate:readme:toc",
+    "bump:version": "npm --no-git-tag-version --allow-same-version version $VERSION",
     "prepublishOnly": "npm run generate:assets"
   },
   "devDependencies": {
