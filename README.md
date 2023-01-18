@@ -1,13 +1,13 @@
 # AsyncAPI Problem
 
-Library that implements the Problem interface. Reference https://www.rfc-editor.org/rfc/rfc7807
+Library that implements the Problem interface. Reference https://www.rfc-editor.org/rfc/rfc7807.
 
 <!-- toc is generated with GitHub Actions do not remove toc markers -->
 
 <!-- toc -->
 
 - [Installation](#installation)
-- [Example](#example)
+- [Examples](#examples)
   * [Simple example](#simple-example)
   * [Mixin example](#mixin-example)
 - [Develop](#develop)
@@ -23,7 +23,7 @@ npm install @asyncapi/problem
 yarn add @asyncapi/problem
 ```
 
-## Example
+## Examples
 
 ### Simple example
 
@@ -60,4 +60,4 @@ console.log(problem.get('type'));
 
 ## Contributing
 
-Read [CONTRIBUTING](https://github.com/asyncapi/.github/blob/master/CONTRIBUTING.md) guide.
+Read [CONTRIBUTING](./CONTRIBUTING.md) guide.
