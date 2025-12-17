@@ -14,10 +14,16 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       
-      - name: Install Node.js
+      - name: Check package-lock version
+        uses: asyncapi/.github/.github/actions/get-node-version-from-package-lock@master
+        id: lockversion
+        
+      - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '14.x'
+          node-version: "${{ steps.lockversion.outputs.version }}"
+          cache: 'npm'
+          cache-dependency-path: '**/package-lock.json'
       
       - name: Install Dependencies
         run: npm i
